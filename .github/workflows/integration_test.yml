@@ -1,16 +1,22 @@
 name: integration_test
 
-on: [push]
+on:
+  push:
+    branches:
+    - dev
+  pull_request:
+    branches:
+    - master
 
 jobs:
   integration_test:
 
-    name: ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: integration_test - ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 6
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8]
         os: [ubuntu-latest, macos-latest] # TODO: windows-latest
 
     steps:
@@ -24,12 +30,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry --version
-        poetry install -vv
+        poetry install -vv -E upload
     - name: Test package installation
       run: |
         poetry build
         ls dist/*.whl | xargs pip install # test installation
         hrun -V
-    - name: Run smoketest for hrun command
+        har2case -h
+        httprunner run -h
+        httprunner startproject -h
+        httprunner har2case -h
+    - name: Run smoketest - postman echo
       run: |
-        cd tests/httpbin && hrun basic.yml --failfast && cd -
+        poetry run hrun examples/postman_echo/request_methods
+    - name: Run smoketest - httpbin
+      run: |
+        poetry run hrun examples/httpbin/

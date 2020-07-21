@@ -1,335 +1,270 @@
 # Release History
 
-## 2.4.5 (2019-12-20)
+## 3.1.3 (2020-07-06)
 
 **Added**
 
-- feat: integrate sentry sdk
+- feat: implement `parameters` feature
 
 **Fixed**
 
-- fix: catch UnicodeDecodeError when json loads request body
-- fix: display indented json for request json body
+- fix: validate with variable or function whose evaluation result is "" or not text
+- fix: raise TestCaseFormatError if teststep validate invalid
+- fix: raise TestCaseFormatError if ref testcase is invalid
+
+## 3.1.2 (2020-06-29)
+
+**Fixed**
+
+- fix: missing setup/teardown hooks for referenced testcase
+- fix: compatibility for `black` on Android termux that does not support multiprocessing well
+- fix: mishandling of request header `Content-Length` for GET method
+- fix: validate with jmespath containing variable or function, e.g. `body.locations[$index].name`
 
 **Changed**
 
-- change: detect request/response bytes encoding, instead of assuming utf-8
-- refactor: make report as submodule
+- change: import locust at beginning to monkey patch all modules
+- change: open file in binary mode
 
-## 2.4.4 (2019-12-17)
+## 3.1.1 (2020-06-23)
 
 **Added**
 
-- feat: add keyword `body` to reference response body
+- feat: add optional message for assertion
 
-**Changed**
+**Fixed**
 
-- refactor: dumps request/response headers, display indented json in html report
-- refactor: dumps request/response body if it is in json format, display indented json in html report
-- change: unify response field(content/json/text) to `body` in html report
+- fix: ValueError when type_match None
+- fix: override referenced testcase export in teststep
+- fix: avoid duplicate import
+- fix: override locust weight
 
-## 2.4.3 (2019-12-16)
+## 3.1.0 (2020-06-21)
 
 **Added**
 
-- feat: load api content on demand
+- feat: integrate [locust](https://locust.io/) v1.0
 
 **Changed**
 
-- refactor: use poetry>=1.0.0
-- test: migrate from travis CI to github actions
-- test: migrate from coveralls to codecov
-- test: run matrix tests on linux/macos/~~windows~~ and Python 2.7/3.5/3.6/3.7/3.8
+- change: make converted referenced pytest files always relative to ProjectRootDir
+- change: log function details when call function failed
+- change: do not raise error if failed to get client/server address info
 
-## 2.4.2 (2019-12-13)
+**Fixed**
 
-**Changed**
+- fix: path handling error when har2case har file and cwd != ProjectRootDir
+- fix: missing list type for request body
 
-- refactor: replace with open file handler, avoid reading files into memory
-- refactor: rename plugin to extension, httprunner/plugins -> httprunner/ext
-- docs: update installation doc for developers
-
-## 2.4.1 (2019-12-12)
+## 3.0.13 (2020-06-17)
 
 **Added**
 
-- feat: add `upload` keyword for upload test, see [doc](https://docs.httprunner.org/prepare/upload-case/)
-- test: pip install package 
-- test: hrun command
+- feat: log client/server IP and port
 
 **Fixed**
 
-- fix: typo testfile_paths
-- fix: check if locustio installed
-- fix: dump json file name is empty when running relative testfile
+- fix: avoid '.csv' been converted to '_csv'
+- fix: convert har to JSON format testcase
+- fix: missing ${var} handling in overriding config variables
+- fix: SyntaxError caused by quote in case of headers."Set-Cookie"
+- fix: FileExistsError when specified project name conflicts with existed file
+- fix: testcase path handling error when path startswith "./" or ".\\"
 
-## 2.4.0 (2019-12-11)
+## 3.0.12 (2020-06-14)
+
+**Fixed**
+
+- fix: compatibility with different path separators of Linux and Windows
+- fix: IndexError in ensure_file_path_valid when file_path=os.getcwd()
+- fix: ensure step referenced api, convert to v3 testcase
+- fix: several other compatibility issues
+
+**Changed**
+
+- change: skip reporting sentry for errors occurred in debugtalk.py
+
+## 3.0.11 (2020-06-08)
+
+**Changed**
+
+- change: override variables
+    (1) testcase: session variables > step variables > config variables
+    (2) testsuite: testcase variables > config variables
+    (3) testsuite testcase variables > testcase config variables
+
+**Fixed**
+
+- fix: incorrect summary success when testcase failed
+- fix: reload to refresh previously loaded debugtalk module
+- fix: escape $$ in variable value
+
+## 3.0.10 (2020-06-07)
 
 **Added**
 
-- feat: validate with python script, ref #773
-- feat: rearrange html report, failed testcases will be displayed on top.
-
-**Changed**
-
-- refactor: make loader as submodule, split to check/locate/load/buildup
-- refactor: make built_in as submodule, split to comparators and functions
-- refactor: adjust code for context and validator
-- docs: update cli argument help
-- adjust format code, remove unused import
+- feat: implement step setup/teardown hooks
+- feat: support alter response in teardown hooks
 
 **Fixed**
 
-- fix: keep setup/teardown hooks original order when merge & override.
-- fix: length comparator exceptions when running in CSV data-driven mode.
+- fix: ensure upload ready
+- fix: add ExtendJSONEncoder to safely dump json data with python object, such as MultipartEncoder
 
-## 2.3.3 (2019-12-04)
+## 3.0.9 (2020-06-07)
 
 **Fixed**
 
-- fix #768: dump json file path error when folder name contains dot, such as `a.b.c`
+- fix: miss formatting referenced testcase
+- fix: handle cases when parent directory name includes dot/hyphen/space
 
 **Changed**
 
-- change: rename builtin function, sleep_N_secs => sleep
+- change: add `export` keyword in TStep to export session variables from referenced testcase
+- change: rename TestCaseInOut field, config_vars and export_vars
+- change: rename StepData field, export_vars
+- change: add `--tb=short` for `hrun` command to use shorter traceback format by default
+- change: search debugtalk.py upward recursively until system root dir
 
-## 2.3.2 (2019-11-01)
+## 3.0.8 (2020-06-04)
 
 **Added**
 
-- docs: add docs content to repo, visit at `https://docs.httprunner.org`
-- docs: update developer interface docs
-
-**Changed**
-
-- rename `render_html_report` to `gen_html_report`
-- make gen_html_report separate with HttpRunner().run_tests()
-- `--report-file`: specify report file path, this has higher priority than specifying report dir.
-- remove `summary` property from HttpRunner
-
-## 2.3.1 (2019-10-28)
+- feat: add sentry sdk
+- feat: extract session variable from referenced testcase step
 
 **Fixed**
 
-- fix locusts entry configuration
+- fix: missing request json
+- fix: override testsuite/testcase config verify
+- fix: only strip whitespaces and tabs, \n\r are left because they maybe used in changeset
+- fix: log testcase duration before raise ValidationFailure
 
 **Changed**
 
-- update PyPi classifiers
+- change: add httprunner version in generated pytest file
 
-## 2.3.0 (2019-10-27)
+## 3.0.7 (2020-06-03)
 
 **Added**
 
-- feat: implement plugin system prototype, make locusts as plugin
-- test: add Python 3.8 to Travis-CI
-- feat: add `__main__.py`, `python -m httprunner` can be used to hrun tests
+- feat: make pytest files in chain style
+- feat: `hrun` supports run pytest files
+- feat: get raw testcase model from pytest file
+
+**Fixed**
+
+- fix: convert jmespath.search result to int/float unintentionally
+- fix: referenced testcase should not be run duplicately
+- fix: requests.cookies.CookieConflictError, multiple cookies with name
+- fix: missing exit code from pytest
+- fix: skip invalid testcase/testsuite yaml/json file
 
 **Changed**
 
-- update dependency versions in pyproject.toml
-- rename folder, httprunner/templates => httprunner/static
-- log httprunner version before running tests
-- remove unused import & code
+- change: `har2case` generate pytest file by default
+- docs: update sponsor info
 
-**Fixed**
-
-- fix #707: duration stat error in multiple testsuites
-
-## 2.2.6 (2019-09-18)
+## 3.0.6 (2020-05-29)
 
 **Added**
 
-- feat: config variables support parsing from function
-- feat: support [jsonpath](https://goessner.net/articles/JsonPath/) to parse json response [#679](https://github.com/httprunner/httprunner/pull/679)
-- feat: generate html report with specified report file [#704](https://github.com/httprunner/httprunner/pull/704)
+- feat: make referenced testcase as pytest class
+
+**Fixed**
+
+- fix: ensure converted python file in utf-8 encoding
+- fix: duplicate running referenced testcase
+- fix: ensure compatibility issues between testcase format v2 and v3
+- fix: ensure compatibility with deprecated cli args in v2, include --failfast/--report-file/--save-tests
+- fix: UnicodeDecodeError when request body in protobuf
 
 **Changed**
 
-- remove unused import
-- adjust code format
+- change: make `allure-pytest`, `requests-toolbelt`, `filetype` as optional dependencies
+- change: move all unittests to tests folder
+- change: save testcase log in PWD/logs/ directory
 
-**Fixed**
-
-- fix: dev-rules link 404
-
-## 2.2.5 (2019-07-28)
+## 3.0.5 (2020-05-22)
 
 **Added**
 
-- log HttpRunner version when initializing
+- feat: each testcase has an unique id in uuid4 format
+- feat: add default header `HRUN-Request-ID` for each testcase #721
+- feat: builtin allure report
+- feat: dump log for each testcase
 
 **Fixed**
 
-- fix #658: sys.exit 1 if any testcase failed
-- fix ModuleNotFoundError in debugging mode if httprunner uninstalled
-
-## 2.2.4 (2019-07-18)
+- fix: ensure referenced testcase share the same session
 
 **Changed**
 
-- replace pipenv & setup.py with poetry
-- drop support for Python 3.4 as it was EOL on 2019-03-16
-- relocate debugging scripts, move from main-debug.py to httprunner.cli
+- change: remove default added `-s` option for hrun
+
+## 3.0.4 (2020-05-19)
+
+**Added**
+
+- feat: make testsuite and run testsuite
+- feat: testcase/testsuite config support getting variables by function
+- feat: har2case with request cookies
+- feat: log request/response headers and body with indent
 
 **Fixed**
 
-- fix #574: delete unnecessary code
-- fix #551: raise if times is not digit
-- fix #572: tests_def_mapping["testcases"] typo error
-
-## 2.2.3 (2019-06-30)
-
-**Fixed**
-
-- fix yaml FullLoader AttributeError when PyYAML version < 5.1
-
-## 2.2.2 (2019-06-26)
+- fix: extract response cookies
+- fix: handle errors when no valid testcases generated
 
 **Changed**
 
-- `extract` is used to replace `output` when passing former teststep's (as a testcase) export value to next teststep
-- `export` is used to replace `output` in testcase config
+- change: har2case do not ignore request headers, except for header startswith :
 
-## 2.2.1 (2019-06-25)
+## 3.0.3 (2020-05-17)
+
+**Fixed**
+
+- fix: compatibility with testcase file path includes dots, space and minus sign
+- fix: testcase generator, validate content.xxx => body.xxx
+- fix: scaffold for v3
+
+## 3.0.2 (2020-05-16)
 
 **Added**
 
-- add demo api/testcase/testsuite to new created scaffold project
-- update default `.gitignore` of new created scaffold project
-- add demo content to `debugtalk.py`/`.env` of new created scaffold project
-
-**Fixed**
-
-- fix extend with testcase reference in format version 2
-- fix ImportError when locustio is not installed
-- fix YAMLLoadWarning by specify yaml loader
-
-## 2.2.0 (2019-06-24)
-
-**Added**
-
-- support testcase/testsuite in format version 2
-
-**Fixed**
-
-- add wheel in dev packages
-- fix exception when teststep name reference former extracted variable
-
-## 2.1.3 (2019-04-24)
-
-**Fixed**
-
-- replace eval mechanism with builtins to prevent security vulnerabilities
-- ImportError for builtins in Python2.7
-
-## 2.1.2 (2019-04-17)
-
-**Added**
-
-- support new variable notation ${var}
-- use \$\$ to escape \$ notation
-- add Python 3.7 for travis CI
-
-**Fixed**
-
-- match duplicate variable/function in single raw string
-- escape '{' and '}' notation in raw string
-- print_info: TypeError when value is None
-- display api name when running api as testcase
-
-## 2.1.1 (2019-04-11)
+- feat: add `make` sub-command to generate python testcases from YAML/JSON  
+- feat: format generated python testcases with [`black`](https://github.com/psf/black)
+- test: add postman echo & httpbin as testcase examples
 
 **Changed**
 
-refactor upload files mechanism with [requests-toolbelt](https://toolbelt.readthedocs.io/en/latest/user.html#multipart-form-data-encoder):
+- refactor all
+- replace jsonschema validation with pydantic
+- remove compatibility with testcase/testsuite format v1
+- replace unittest with pytest
+- remove builtin html report, allure will be used with pytest later
+- remove locust support temporarily
+- update command line interface
 
-- simplify usage syntax, detect mimetype with [filetype](https://github.com/h2non/filetype.py).
-- support upload multiple fields.
-
-## 2.1.0 (2019-04-10)
-
-**Added**
-
-- implement json dump Python objects when save tests
-- implement lazy parser
-- remove project_mapping from parse_tests result
-
-**Fixed**
-
-- reference output variables
-- pass output variables between testcases
-
-## 2.0.6 (2019-03-18)
-
-**Added**
-
-- create .gitignore file when initializing new project
-
-**Fixed**
-
-- fix CSV relative path detection
-- fix current validators displaying the former one when they are empty
-
-## 2.0.5 (2019-03-04)
-
-**Added**
-
-- implement method to get variables and output
-
-**Fixed**
-
-- fix xss in response json
-
-## 2.0.4 (2019-02-28)
-
-**Fixed**
-
-- fix verify priority with nested testcase
-- fix function in config variables called multiple times
-- dump loaded tests when running tests_mapping directly
-
-## 2.0.3 (2019-02-24)
-
-**Fixed**
-
-- fix verify priority: teststep > config
-- fix Chinese charactor in log_file encoding error in Windows
-- fix dump file with Chinese charactor in Python 3
-
-## 2.0.2 (2019-01-21)
-
-**Fixed**
-
-- each teststeps in one testcase share the same session
-- fix duplicate API definition output
+## 3.0.1 (2020-03-24)
 
 **Changed**
 
-- display result from hook functions in DEBUG level log
-- change log level of "Variables & Output" to INFO
-- print Invalid testcase path or testcases
-- print testcase output in INFO level log
+- remove sentry sdk
 
-## 2.0.1 (2019-01-18)
+## 3.0.0 (2020-03-10)
 
-**Fixed**
+**Added**
 
-- override current teststep variables with former testcase output variables
-- Fixed compatibility when testcase name is empty
-- skip undefined variable when parsing string content
+- feat: dump log for each testcase
+- feat: add default header `HRUN-Request-ID` for each testcase #721
 
 **Changed**
 
-- add back request method in report
-
-## 2.0.0 (2019-01-01)
-
-**Changed**
-
-- Massive Refactor and Simplification
-- Redesign testcase structure
-- Module pipline
-- Start Semantic Versioning
-- Switch to Apache 2.0 license
-- Change logo
+- remove support for Python 2.7
+- replace logging with [loguru](https://github.com/Delgan/loguru)
+- replace string format with f-string
+- remove dependency colorama and colorlog
+- generate reports/logs folder in current working directory
+- remove cli `--validate`
+- remove cli `--pretty`
